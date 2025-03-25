@@ -15,133 +15,127 @@ import maplibregl from 'maplibre-gl';
 import { WebSocketReaderService } from '../web-socket-reader.service';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
+
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css'],
   standalone: true,
-  imports: [CommonModule], // Add any necessary imports here
+  imports: [CommonModule],
 })
 export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   map: Map | undefined;
   trainMarker: Marker | undefined;
-  private messageSubscription: Subscription | null = null;
-
-  getMsg!: ElementRef<HTMLButtonElement>;
+  private locationSubscription: Subscription | null = null;
 
   @ViewChild('map')
   private mapContainer!: ElementRef<HTMLElement>;
 
   constructor(
-    private webSocketReaderService: WebSocketReaderService,
+    public webSocketReaderService: WebSocketReaderService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
-  ngOnInit(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      this.initWebSocket();
-    }
+  ngOnInit() {
+    this.locationSubscription = this.webSocketReaderService
+      .getLocationUpdates()
+      .subscribe((locationData) => {
+        if (locationData) {
+          console.log('Received location data:', locationData);
+          this.updateTrainMarker(locationData.lon, locationData.lat);
+        }
+      });
   }
 
-  private initWebSocket() {
-    // Initial WebSocket connection
-    this.webSocketReaderService.getMessages().subscribe({
-      next: (message) => {
-        console.log('Received message:', message);
-      },
-      error: (error) => console.error('WebSocket error:', error),
-    });
-    this.webSocketReaderService.sendMessage('Hello from Angular!');
-  }
-
-  private updateTrainLocation(message: any) {
-    if (this.trainMarker && message.lat && message.lon) {
-      this.trainMarker.setLngLat([message.lon, message.lat]);
-
-      // Optional: Fly to the new location
-      if (this.map) {
-        this.map.flyTo({
-          center: [message.lon, message.lat],
-          zoom: 10,
-        });
-      }
-    }
-  }
   ngAfterViewInit() {
     if (isPlatformBrowser(this.platformId)) {
       this.initMap();
-      /*
-      // Add click event listener to the button
-      if (this.getMsg && this.getMsg.nativeElement) {
-        this.getMsg.nativeElement.addEventListener('click', () => {
-          this.requestMessage();
-        });
-      }*/
     }
   }
-  /* private requestMessage() {
-    // Request a new message from the server
-    this.webSocketReaderService.requestMessage();
-
-    // Optional: Create a temporary subscription to get the next message
-    const tempSubscription = this.webSocketReaderService.connect().subscribe({
-      next: (message) => {
-        console.log('Manually requested message:', message);
-        this.updateTrainLocation(message);
-        // Unsubscribe after receiving the message
-        tempSubscription.unsubscribe();
-      },
-      error: (error) => console.error('Message request error:', error),
-    });
-  }
-
-  public getMessages() {
-    this.webSocketReaderService.connect().subscribe({
-      next: (message) => {
-        console.log('Received message:', message);
-        this.updateTrainLocation(message);
-      },
-      error: (error) => console.error('WebSocket error:', error),
-    });
-  }*/
 
   private initMap() {
-    const initialState = { lng: 12.550343, lat: 55.665957, zoom: 8 };
+    const initialState = { lng: -122.4194, lat: 37.7749, zoom: 10 }; // San Francisco coordinates
 
-    console.log('Initializing map:', this.mapContainer.nativeElement);
+    this.map = new maplibregl.Map({
+      container: this.mapContainer.nativeElement,
+      style: {
+        version: 8,
+        sources: {
+          osm: {
+            type: 'raster',
+            tiles: [
+              'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+              'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
+              'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            ],
+            tileSize: 256,
+          },
+        },
+        layers: [
+          {
+            id: 'osm-tiles',
+            type: 'raster',
+            source: 'osm',
+            minzoom: 0,
+            maxzoom: 22,
+          },
+        ],
+      },
+      center: [initialState.lng, initialState.lat],
+      zoom: initialState.zoom,
+    });
 
-    try {
-      this.map = new maplibregl.Map({
-        container: this.mapContainer.nativeElement,
-        style: `https://api.maptiler.com/maps/streets-v2/style.json?key=QZKkB5NpxESycimzHn0F`,
-        center: [initialState.lng, initialState.lat],
-        zoom: initialState.zoom,
-      });
+    const el = document.createElement('img');
+    el.src = './train.png'; // Ensure this path is correct
+    el.style.width = '40px';
+    el.style.height = '40px';
 
-      // Add a console log to confirm map creation
-      console.log('Map created:', this.map);
+    this.trainMarker = new maplibregl.Marker({ element: el })
+      .setLngLat([initialState.lng, initialState.lat])
+      .addTo(this.map)
+      .setPopup(new maplibregl.Popup().setHTML('<h1>Train</h1>'));
 
-      const el = document.createElement('img');
-      el.src = './train.png';
-      el.style.width = '40px';
-      el.style.height = '40px';
+    this.map.addControl(new maplibregl.NavigationControl());
+  }
+  private updateTrainMarker(lon: number, lat: number) {
+    if (this.trainMarker && this.map) {
+      const start = this.trainMarker.getLngLat();
+      const end = { lng: lon, lat: lat };
+      const duration = 1000; // 1 second for smooth transition
+      const startTime = performance.now();
 
-      this.trainMarker = new maplibregl.Marker({ element: el })
-        .setLngLat([initialState.lng, initialState.lat])
-        .addTo(this.map);
-    } catch (error) {
-      console.error('Error initializing map:', error);
+      const animate = (currentTime: number) => {
+        const elapsed = currentTime - startTime;
+        const t = Math.min(elapsed / duration, 1); // Normalize between 0 and 1
+
+        // Interpolate between start and end using a simple linear formula
+        const interpolatedLng = start.lng + (end.lng - start.lng) * t;
+        const interpolatedLat = start.lat + (end.lat - start.lat) * t;
+
+        // Move the marker to the interpolated position
+        this.trainMarker?.setLngLat([interpolatedLng, interpolatedLat]);
+
+        if (t < 1) {
+          requestAnimationFrame(animate); // Continue animation
+        }
+      };
+
+      requestAnimationFrame(animate);
     }
   }
-  ngOnDestroy() {
-    // Clean up subscriptions
-    if (this.messageSubscription) {
-      this.messageSubscription.unsubscribe();
-    }
 
-    // Remove map
+  ngOnDestroy() {
+    if (this.locationSubscription) {
+      this.locationSubscription.unsubscribe();
+    }
+    this.webSocketReaderService.disconnect();
     if (this.map) {
       this.map.remove();
     }
+  }
+
+  sendTestLocation() {
+    const testLocation = { lat: 37.7749, lon: -122.4194 };
+    this.webSocketReaderService.sendLocation(testLocation);
   }
 }
