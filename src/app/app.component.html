@@ -1,19 +1,17 @@
 <main class="mobile-screen">
   <!-- Header -->
-  <header class="header">
-    <h4>Train GPS Tracker</h4>
-  </header>
+  <app-header></app-header>
 
   <!-- Map Section -->
-  <section class="map-section">
-    <app-map></app-map>
-  </section>
-
-  <!-- Floating Button -->
-  <button class="floating-btn">🔄 Refresh Location</button>
+  <div class="container">
+    <section class="map-section">
+      <app-map></app-map>
+      <button class="floating-btn">
+        <i class="fas fa-location-arrow"></i> Find Me
+      </button>
+    </section>
+  </div>
 
   <!-- Footer -->
-  <footer class="footer">
-    <p>© 2025 My Train App</p>
-  </footer>
+  <app-footer></app-footer>
 </main>

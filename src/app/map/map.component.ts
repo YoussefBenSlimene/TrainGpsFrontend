@@ -86,7 +86,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     const el = document.createElement('img');
-    el.src = './train.png'; // Ensure this path is correct
+    el.src = './train.png';
     el.style.width = '40px';
     el.style.height = '40px';
 
@@ -101,22 +101,20 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.trainMarker && this.map) {
       const start = this.trainMarker.getLngLat();
       const end = { lng: lon, lat: lat };
-      const duration = 1000; // 1 second for smooth transition
+      const duration = 1000;
       const startTime = performance.now();
 
       const animate = (currentTime: number) => {
         const elapsed = currentTime - startTime;
-        const t = Math.min(elapsed / duration, 1); // Normalize between 0 and 1
+        const t = Math.min(elapsed / duration, 1);
 
-        // Interpolate between start and end using a simple linear formula
         const interpolatedLng = start.lng + (end.lng - start.lng) * t;
         const interpolatedLat = start.lat + (end.lat - start.lat) * t;
 
-        // Move the marker to the interpolated position
         this.trainMarker?.setLngLat([interpolatedLng, interpolatedLat]);
 
         if (t < 1) {
-          requestAnimationFrame(animate); // Continue animation
+          requestAnimationFrame(animate);
         }
       };
 
