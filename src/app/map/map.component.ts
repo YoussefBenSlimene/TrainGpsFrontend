@@ -137,7 +137,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     this.trainMarker = new maplibregl.Marker({ element: el })
       .setLngLat([11.027361, 35.521222]) // Position initiale identique au marqueur fixe
       .addTo(this.map)
-      .setPopup(new maplibregl.Popup().setHTML('<h3>Position du train</h3>'));
+      .setPopup(new maplibregl.Popup().setHTML('<h3 >Position du train</h3>'));
   }
 
   // Méthodes pour les boutons de contrôle
