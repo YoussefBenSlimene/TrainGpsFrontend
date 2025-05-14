@@ -1,1 +1,21 @@
-<p>home works!</p>
+<div class="map-wrap">
+    <a href="https://www.maptiler.com" class="watermark"
+      ><img src="https://api.maptiler.com/resources/logo.svg" alt="MapTiler logo"
+    /></a>
+    <div class="map" #map></div>
+    
+    <div class="map-controls">
+      <button class="map-control-btn" (click)="locateUser()">
+        <i class="bi bi-geo"></i>
+      </button>
+      <button class="map-control-btn" (click)="zoomIn()">
+        <i class="bi bi-plus-lg"></i>
+      </button>
+      <button class="map-control-btn" (click)="zoomOut()">
+        <i class="bi bi-dash-lg"></i>
+      </button>
+      <button class="map-control-btn" (click)="sendTestLocation()">
+        <i class="bi bi-train-front"></i>
+      </button>
+    </div>
+  </div>

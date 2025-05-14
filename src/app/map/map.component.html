@@ -1,14 +1,28 @@
-<div class="map-wrap">
-  <a href="https://www.maptiler.com" class="watermark"
-    ><img src="https://api.maptiler.com/resources/logo.svg" alt="MapTiler logo"
-  /></a>
+<div class="map-container">
   <div class="map" #map></div>
-  <button
-    class="floating-btn"
-    (click)="
-      webSocketReaderService.sendLocation({ lat: 40.7128, lon: -74.006 })
-    "
-  >
-    Send Location
-  </button>
+  
+  <!-- Contrôles de carte -->
+  <div class="map-controls">
+    <button class="control-btn" (click)="zoomIn()" aria-label="Zoom in">
+      <i class="bi bi-plus-lg"></i>
+    </button>
+    <button class="control-btn" (click)="zoomOut()" aria-label="Zoom out">
+      <i class="bi bi-dash-lg"></i>
+    </button>
+    <button class="control-btn locate-btn" (click)="locateUser()" aria-label="My location">
+      <i class="bi bi-geo-alt"></i>
+    </button>
+    <button class="control-btn action-btn" 
+            (click)="webSocketReaderService.sendLocation({ lat: 35.521228, lon: 11.027307 })"
+            aria-label="Send location">
+      <i class="bi bi-send"></i>
+    </button>
+  </div>
+
+  <!-- Watermark discret -->
+  <div class="watermark">
+    <a href="https://www.maptiler.com" target="_blank" rel="noopener noreferrer">
+      <img src="https://api.maptiler.com/resources/logo.svg" alt="MapTiler" width="80">
+    </a>
+  </div>
 </div>

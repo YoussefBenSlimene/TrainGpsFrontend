@@ -9,7 +9,7 @@ import {
   Inject,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { Map, Marker } from 'maplibre-gl';
+import { Map, Marker, NavigationControl, GeolocateControl } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import maplibregl from 'maplibre-gl';
 import { WebSocketReaderService } from '../web-socket-reader.service';
@@ -26,6 +26,7 @@ import { Subscription } from 'rxjs';
 export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   map: Map | undefined;
   trainMarker: Marker | undefined;
+  fixedMarker: Marker | undefined;
   private locationSubscription: Subscription | null = null;
 
   @ViewChild('map')
@@ -54,7 +55,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private initMap() {
-    const initialState = { lng: -122.4194, lat: 37.7749, zoom: 10 }; // San Francisco coordinates
+    const initialState = { lng: 11.027361, lat: 35.521222, zoom: 14 };
 
     this.map = new maplibregl.Map({
       container: this.mapContainer.nativeElement,
@@ -85,18 +86,87 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       zoom: initialState.zoom,
     });
 
+    // Création du marqueur fixe (position spécifique)
+    this.createFixedMarker();
+
+    // Création du marqueur du train
+    this.createTrainMarker();
+
+    // Ajout des contrôles de navigation
+    this.map.addControl(new maplibregl.NavigationControl());
+    this.map.addControl(new maplibregl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true
+      },
+      trackUserLocation: true,
+      showUserLocation: true
+    }));
+  }
+
+  private createFixedMarker() {
+    if (!this.map) return;
+
+    const el = document.createElement('div');
+    el.className = 'fixed-marker';
+    el.style.fontSize = '24px';
+    el.style.textShadow = '0 0 3px white';
+
+    this.fixedMarker = new maplibregl.Marker({
+      element: el,
+      anchor: 'bottom'
+    })
+    .setLngLat([11.027361, 35.521222]) // 35°31'16.4"N 11°01'38.5"E
+    .addTo(this.map)
+    .setPopup(new maplibregl.Popup().setHTML(`
+      <h3>Position de référence</h3>
+      <p>35°31'16.4"N 11°01'38.5"E</p>
+      <p>Coordonnées décimales:<br>
+      Lat: 35.521222<br>
+      Lng: 11.027361</p>
+    `));
+  }
+
+  private createTrainMarker() {
+    if (!this.map) return;
+
     const el = document.createElement('img');
-    el.src = './train.png';
+    el.src = 'train.png'; 
     el.style.width = '40px';
     el.style.height = '40px';
 
     this.trainMarker = new maplibregl.Marker({ element: el })
-      .setLngLat([initialState.lng, initialState.lat])
+      .setLngLat([11.027361, 35.521222]) // Position initiale identique au marqueur fixe
       .addTo(this.map)
-      .setPopup(new maplibregl.Popup().setHTML('<h1>Train</h1>'));
-
-    this.map.addControl(new maplibregl.NavigationControl());
+      .setPopup(new maplibregl.Popup().setHTML('<h3>Position du train</h3>'));
   }
+
+  // Méthodes pour les boutons de contrôle
+  zoomIn(): void {
+    this.map?.zoomIn();
+  }
+
+  zoomOut(): void {
+    this.map?.zoomOut();
+  }
+
+  locateUser(): void {
+    if (this.map && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          this.map?.flyTo({
+            center: [position.coords.longitude, position.coords.latitude],
+            zoom: 15,
+            essential: true
+          });
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+          alert('Could not get your location');
+        }
+      );
+    }
+  }
+
   private updateTrainMarker(lon: number, lat: number) {
     if (this.trainMarker && this.map) {
       const start = this.trainMarker.getLngLat();
@@ -123,17 +193,8 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.locationSubscription) {
-      this.locationSubscription.unsubscribe();
-    }
+    this.locationSubscription?.unsubscribe();
     this.webSocketReaderService.disconnect();
-    if (this.map) {
-      this.map.remove();
-    }
-  }
-
-  sendTestLocation() {
-    const testLocation = { lat: 37.7749, lon: -122.4194 };
-    this.webSocketReaderService.sendLocation(testLocation);
+    this.map?.remove();
   }
 }

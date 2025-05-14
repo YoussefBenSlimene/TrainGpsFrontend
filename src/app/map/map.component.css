@@ -1,49 +1,105 @@
-.map-wrap {
+.map-container {
   position: relative;
   width: 100%;
-  height: calc(
-    100vh - 77px
-  ); /* calculate height of the screen minus the heading */
+  height: 100vh;
+  overflow: hidden;
+  background: #f8fafc;
 }
 
 .map {
   position: absolute;
   width: 100%;
   height: 100%;
+  z-index: 1;
 }
 
+/* Contrôles de carte */
+.map-controls {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 100;
+}
+
+.control-btn {
+  width: 44px;
+  height: 44px;
+  background: white;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #334155;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.control-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  color: #1e40af;
+}
+
+.control-btn:active {
+  transform: translateY(0);
+}
+
+.control-btn i {
+  font-size: 1.2rem;
+}
+
+.locate-btn {
+  color: #1e40af;
+}
+
+.action-btn {
+  background: #1e40af;
+  color: white;
+}
+
+.action-btn:hover {
+  background: #1e3a8a;
+  color: white;
+}
+
+/* Watermark */
 .watermark {
   position: absolute;
-  left: 10px;
-  bottom: 10px;
-  z-index: 999;
-}
-.floating-btn {
-  position: absolute;
-  top: 0;
-  right: 20px;
-  background: #1e88e5;
-  color: white;
-  padding: 0.75rem 1rem;
-  border-radius: 50px;
-  border: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 1rem;
+  left: 16px;
+  bottom: 16px;
+  z-index: 100;
+  opacity: 0.8;
+  transition: opacity 0.3s;
 }
 
-.floating-btn-get {
-  position: absolute;
-  top: 0;
-  left: 20px;
-  background: #1e88e5;
-  color: white;
-  padding: 0.75rem 1rem;
-  border-radius: 50px;
-  border: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 1rem;
+.watermark:hover {
+  opacity: 1;
 }
+
+.watermark img {
+  height: 24px;
+  width: auto;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+}
+
+/* Animation pour les boutons */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.control-btn {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.control-btn:nth-child(1) { animation-delay: 0.1s; }
+.control-btn:nth-child(2) { animation-delay: 0.2s; }
+.control-btn:nth-child(3) { animation-delay: 0.3s; }
+.control-btn:nth-child(4) { animation-delay: 0.4s; }
