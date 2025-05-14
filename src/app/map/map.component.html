@@ -3,12 +3,13 @@
     ><img src="https://api.maptiler.com/resources/logo.svg" alt="MapTiler logo"
   /></a>
   <div class="map" #map></div>
-  <button
-    class="floating-btn"
-    (click)="
-      webSocketReaderService.sendLocation({ lat: 40.7128, lon: -74.006 })
-    "
-  >
-    Send Location
-  </button>
+  <div class="button-container">
+    <button class="floating-btn" (click)="showAllTrains()">
+      Show All Trains
+    </button>
+  </div>
+
+  <!-- Map Controls -->
+
+  <!-- Train selector panel -->
 </div>

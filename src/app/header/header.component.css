@@ -10,8 +10,6 @@ header {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   position: relative;
   z-index: 5;
-  border-top-left-radius: 15px;
-  border-top-right-radius: 15px;
 }
 
 .header-content {

@@ -1,17 +1,52 @@
-<main class="mobile-screen">
-  <!-- Header -->
-  <app-header></app-header>
+<app-header></app-header>
 
-  <!-- Map Section -->
-  <div class="container">
-    <section class="map-section">
+<main class="app-container">
+  <!-- Main Content -->
+  <div class="content-wrapper">
+    <!-- Map Section -->
+    <section class="map-container">
       <app-map></app-map>
       <button class="floating-btn">
         <i class="fas fa-location-arrow"></i> Find Me
       </button>
     </section>
-  </div>
 
-  <!-- Footer -->
-  <app-footer></app-footer>
+    <!-- Right Side Menu -->
+    <aside class="side-menu">
+      <div class="menu-header">
+        <h2>Map Navigator</h2>
+      </div>
+      <div class="menu-content">
+        <div class="train-status">
+          <div class="train-selector">
+            <h3>Available Trains</h3>
+            <div class="status-list">
+              <!-- Train items will be added dynamically via JavaScript -->
+            </div>
+
+            <div class="menu-actions">
+              <button class="action-btn refresh-btn">
+                <i class="fas fa-sync-alt"></i> Refresh
+              </button>
+              <button class="action-btn show-all-btn">
+                <i class="fas fa-eye"></i> Show All Trains
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="map-controls">
+      <button class="map-control-btn" id="zoom-in-btn">
+        <i class="fas fa-plus"></i>
+      </button>
+      <button class="map-control-btn" id="zoom-out-btn">
+        <i class="fas fa-minus"></i>
+      </button>
+      <button class="map-control-btn" id="refresh-map-btn">
+        <i class="fas fa-sync-alt"></i>
+      </button>
+    </div>
+  </div>
 </main>
+<app-footer></app-footer>
