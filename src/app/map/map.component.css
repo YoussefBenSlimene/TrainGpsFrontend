@@ -69,6 +69,85 @@
   color: white;
 }
 
+/* Trains Menu */
+.trains-menu {
+  position: absolute;
+  top: 20px;
+  right: 80px;
+  width: 300px;
+  max-height: calc(100vh - 40px);
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.trains-menu h2 {
+  padding: 16px;
+  margin: 0;
+  font-size: 18px;
+  color: #1e40af;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f1f5f9;
+}
+
+.trains-list {
+  overflow-y: auto;
+  max-height: calc(100vh - 100px);
+  padding: 8px;
+}
+
+.no-trains {
+  padding: 16px;
+  color: #64748b;
+  text-align: center;
+  font-style: italic;
+}
+
+.train-item {
+  padding: 12px;
+  margin-bottom: 8px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border-left: 4px solid #ff5733;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.train-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: #f1f5f9;
+}
+
+.train-name {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 4px;
+  color: #0f172a;
+}
+
+.train-details {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.train-route {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.train-id {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
 /* Watermark */
 .watermark {
   position: absolute;
@@ -91,15 +170,37 @@
 
 /* Animation pour les boutons */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .control-btn {
   animation: fadeIn 0.4s ease-out forwards;
 }
 
-.control-btn:nth-child(1) { animation-delay: 0.1s; }
-.control-btn:nth-child(2) { animation-delay: 0.2s; }
-.control-btn:nth-child(3) { animation-delay: 0.3s; }
-.control-btn:nth-child(4) { animation-delay: 0.4s; }
+.control-btn:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.control-btn:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.control-btn:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.control-btn:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+/* Train path line on map */
+.train-path {
+  stroke-width: 3;
+  stroke-opacity: 0.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

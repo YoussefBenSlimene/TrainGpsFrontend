@@ -1,6 +1,6 @@
 <div class="map-container">
   <div class="map" #map></div>
-  
+
   <!-- Contrôles de carte -->
   <div class="map-controls">
     <button class="control-btn" (click)="zoomIn()" aria-label="Zoom in">
@@ -9,20 +9,60 @@
     <button class="control-btn" (click)="zoomOut()" aria-label="Zoom out">
       <i class="bi bi-dash-lg"></i>
     </button>
-    <button class="control-btn locate-btn" (click)="locateUser()" aria-label="My location">
+    <button
+      class="control-btn locate-btn"
+      (click)="locateUser()"
+      aria-label="My location"
+    >
       <i class="bi bi-geo-alt"></i>
     </button>
-    <button class="control-btn action-btn" 
-            (click)="webSocketReaderService.sendLocation({ lat: 35.521228, lon: 11.027307 })"
-            aria-label="Send location">
-      <i class="bi bi-send"></i>
+    <button
+      class="control-btn action-btn"
+      (click)="refreshTrains()"
+      aria-label="Refresh trains"
+    >
+      <i class="bi bi-arrow-clockwise"></i>
     </button>
+  </div>
+
+  <!-- Train selection menu -->
+  <div class="trains-menu">
+    <h2>Available Trains</h2>
+    <div class="trains-list">
+      <div
+        class="train-item"
+        *ngFor="let train of trainsList"
+        [ngStyle]="{ 'border-left-color': train.color || '#FF5733' }"
+        (click)="centerOnTrain(train.id)"
+      >
+        <div class="train-name">{{ train.name || "Unknown Train" }}</div>
+        <div class="train-details">
+          <span class="train-route">
+            <i class="bi bi-geo"></i>
+            {{ train.departurePlace || "Unknown" }} →
+            {{ train.destinationPlace || "Unknown" }}
+          </span>
+          <span class="train-id">ID: {{ train.id }}</span>
+        </div>
+      </div>
+      <div *ngIf="trainsList.length === 0" class="no-trains">
+        No trains available. Click refresh to get trains.
+      </div>
+    </div>
   </div>
 
   <!-- Watermark discret -->
   <div class="watermark">
-    <a href="https://www.maptiler.com" target="_blank" rel="noopener noreferrer">
-      <img src="https://api.maptiler.com/resources/logo.svg" alt="MapTiler" width="80">
+    <a
+      href="https://www.maptiler.com"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <img
+        src="https://api.maptiler.com/resources/logo.svg"
+        alt="MapTiler"
+        width="80"
+      />
     </a>
   </div>
 </div>
